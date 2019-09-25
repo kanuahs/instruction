@@ -48,7 +48,6 @@ to quickly create a Cobra application.`,
 		} else {
 			deployment = v1.Deployment{}
 		}
-		log.Println(deployment)
 		instruction.InspectStruct("v1.Deployment", deployment)
 
 	},
