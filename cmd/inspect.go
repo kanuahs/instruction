@@ -27,13 +27,10 @@ import (
 // inspectCmd represents the inspect command
 var inspectCmd = &cobra.Command{
 	Use:   "inspect",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "inspect will expand the struct recursively and print path, value and struct tags",
+	Long: `inspect recursively expands the struct using reflect.
+For each primitive value, the path, value and struct tag is printed
+Each struct, map, interface is exapnded and the name is appended to the path for the child elements`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("inspect called")
 		var deployment v1.Deployment
