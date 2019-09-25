@@ -47,6 +47,20 @@ Each struct, map, interface is exapnded and the name is appended to the path for
 		}
 		instruction.InspectStruct("v1.Deployment", deployment)
 
+		// var statefulSet v1.StatefulSet
+		// // Using a go-client statefulset as a sample struct
+		// statefulSetFile, err := cmd.Flags().GetString("filename")
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// if statefulSetFile != "" {
+		// 	file, _ := ioutil.ReadFile(statefulSetFile)
+		// 	yaml.Unmarshal(file, &statefulSet)
+		// } else {
+		// 	statefulSet = v1.StatefulSet{}
+		// }
+		// instruction.InspectStruct("v1.StatefulSet", statefulSet)
+
 	},
 }
 
