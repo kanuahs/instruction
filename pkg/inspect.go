@@ -9,48 +9,50 @@ import (
 // InspectStruct accepts a struct and prints info about that struct
 func InspectStruct(name string, x interface{}) {
 	fmt.Printf("Display %s (%T):\n", name, x)
-	display(name, reflect.ValueOf(x))
+	display(name, reflect.ValueOf(x), "")
 }
 
-func display(path string, v reflect.Value) {
+func display(path string, v reflect.Value, structTag string) {
+	template := "%-70s = %-10s - %-40s\n"
 	switch v.Kind() {
 	case reflect.Invalid:
 		fmt.Printf("%s = invalid\n", path)
 	case reflect.Slice, reflect.Array:
 		for i := 0; i < v.Len(); i++ {
-			display(fmt.Sprintf("%s[%d]", path, i), v.Index(i))
+			display(fmt.Sprintf("%s[%d]", path, i), v.Index(i), structTag)
 		}
 	case reflect.Struct:
 		for i := 0; i < v.NumField(); i++ {
 			fieldPath := fmt.Sprintf("%s.%s", path, v.Type().Field(i).Name)
-			display(fieldPath, v.Field(i))
+			currentStructTag := ""
 			if yamlTag := v.Type().Field(i).Tag.Get("yaml"); yamlTag != "" {
-				fmt.Printf("StructTag --- yaml:%s\n", yamlTag)
+				currentStructTag = currentStructTag + "yaml:" + yamlTag
 			}
 			if jsonTag := v.Type().Field(i).Tag.Get("json"); jsonTag != "" {
-				fmt.Printf("StructTag --- json:%s\n", jsonTag)
+				currentStructTag = currentStructTag + "json:" + jsonTag
 			}
+			display(fieldPath, v.Field(i), currentStructTag)
 		}
 	case reflect.Map:
 		for _, key := range v.MapKeys() {
 			display(fmt.Sprintf("%s[%s]", path,
-				formatAtom(key)), v.MapIndex(key))
+				formatAtom(key)), v.MapIndex(key), structTag)
 		}
 	case reflect.Ptr:
 		if v.IsNil() {
-			fmt.Printf("%s = nil\n", path)
+			fmt.Printf(template, path, "nil", structTag)
 		} else {
-			display(fmt.Sprintf("(*%s)", path), v.Elem())
+			display(fmt.Sprintf("(*%s)", path), v.Elem(), structTag)
 		}
 	case reflect.Interface:
 		if v.IsNil() {
-			fmt.Printf("%s = nil\n", path)
+			fmt.Printf(template, path, "nil", structTag)
 		} else {
 			fmt.Printf("%s.type = %s\n", path, v.Elem().Type())
-			display(path+".value", v.Elem())
+			display(path+".value", v.Elem(), structTag)
 		}
 	default: // basic types, channels, funcs
-		fmt.Printf("%s = %s\n", path, formatAtom(v))
+		fmt.Printf(template, path, formatAtom(v), structTag)
 	}
 }
 
