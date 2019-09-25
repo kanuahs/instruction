@@ -24,6 +24,12 @@ func display(path string, v reflect.Value) {
 		for i := 0; i < v.NumField(); i++ {
 			fieldPath := fmt.Sprintf("%s.%s", path, v.Type().Field(i).Name)
 			display(fieldPath, v.Field(i))
+			if yamlTag := v.Type().Field(i).Tag.Get("yaml"); yamlTag != "" {
+				fmt.Printf("StructTag --- yaml:%s\n", yamlTag)
+			}
+			if jsonTag := v.Type().Field(i).Tag.Get("json"); jsonTag != "" {
+				fmt.Printf("StructTag --- json:%s\n", jsonTag)
+			}
 		}
 	case reflect.Map:
 		for _, key := range v.MapKeys() {

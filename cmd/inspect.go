@@ -15,10 +15,12 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"log"
 
 	instruction "github.com/kanuahs/instruction/pkg"
 	"github.com/spf13/cobra"
+	yaml "gopkg.in/yaml.v2"
 	v1 "k8s.io/api/apps/v1"
 )
 
@@ -34,9 +36,19 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("inspect called")
-
+		var deployment v1.Deployment
 		// Using a go-client deployment as a sample struct
-		deployment := &v1.Deployment{}
+		deploymentFile, err := cmd.Flags().GetString("filename")
+		if err != nil {
+			log.Fatal(err)
+		}
+		if deploymentFile != "" {
+			file, _ := ioutil.ReadFile(deploymentFile)
+			yaml.Unmarshal(file, &deployment)
+		} else {
+			deployment = v1.Deployment{}
+		}
+		log.Println(deployment)
 		instruction.InspectStruct("v1.Deployment", deployment)
 
 	},
@@ -54,4 +66,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// inspectCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	inspectCmd.Flags().String("filename", "", "File containing a struct to be unmarshalled")
 }
