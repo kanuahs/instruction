@@ -1,2 +1,7 @@
 vendor
 Gopkg.lock
+.vscode
+build
+instruction
+*dummy*
+dist
